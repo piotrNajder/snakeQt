@@ -41,6 +41,9 @@ cImage<T>::cImage(T **rArr, T **gArr, T **bArr, uint32_t c, uint32_t r) {
 }
 
 template <typename T>
+cImage<T>::cImage() {}
+
+template <typename T>
 cImage<T>::cImage(uint8_t numOfColorChannels, uint32_t c, uint32_t r, uint32_t max_col) {
 
     if (numOfColorChannels == 1) {
@@ -357,6 +360,13 @@ int cImage<T>::writePPMB_image(const std::string fname) {
 
     fclose(fp);
     return(1);
+}
+
+template <typename T>
+std::string cImage<T>::getFileName() const {
+    std::size_t dotPos = srcFileName.find_last_of(".");
+    std::size_t slashPos = srcFileName.find_last_of("/");
+    return srcFileName.substr(slashPos + 1, dotPos - slashPos - 1);
 }
 
 // Workaround for linker problems with class templates

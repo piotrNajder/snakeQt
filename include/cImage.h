@@ -36,10 +36,13 @@ public:
 	cImage(T **gsArr, uint32_t c, uint32_t r);
 	cImage(T **rArr, T **gArr, T **bArr, uint32_t columns, uint32_t rows);
 	cImage(uint8_t numOfColorChannels, uint32_t c, uint32_t r, uint32_t max_col = 255);
+    cImage();
 	~cImage();
 
 	bool read();
 	bool write(const std::string fName);
+
+    std::string getFileName() const;
 
 private:
 	bool isGreyscale();

@@ -31,8 +31,16 @@ void MainWindow::closeEvent(QCloseEvent *event) {
 
 void MainWindow::open() {
     if (maybeSave()) {
-        ImgFileName = QFileDialog::getOpenFileName(this, tr("Open File"), QDir::currentPath());
-        if (!ImgFileName.isEmpty()) ui->scribbleArea->openImage(ImgFileName);
+        QString selfilter = tr("PPM BITMAP (*.ppm)");
+        ImgFileName = QFileDialog::getOpenFileName(
+                this,
+                tr("Open File"),
+                QDir::currentPath(),
+                tr("PPM BITMAP (*.ppm)"),
+                &selfilter
+        );
+        if (!ImgFileName.isEmpty())
+            ui->scribbleArea->openImage(ImgFileName);
     }
 }
 
@@ -68,11 +76,13 @@ void MainWindow::createActions() {
     connect(openAct, SIGNAL(triggered()), this, SLOT(open()));
 
     foreach (QByteArray format, QImageWriter::supportedImageFormats()) {
-        QString text = tr("%1...").arg(QString(format).toUpper());
-        QAction *action = new QAction(text, this);
-        action->setData(format);
-        connect(action, SIGNAL(triggered()), this, SLOT(save()));
-        saveAsActs.append(action);
+        if (QString(format) == "ppm"){
+            QString text = tr("%1...").arg(QString(format).toUpper());
+            QAction *action = new QAction(text, this);
+            action->setData(format);
+            connect(action, SIGNAL(triggered()), this, SLOT(save()));
+            saveAsActs.append(action);
+        }
     }
 
     exitAct = new QAction(tr("E&xit"), this);
@@ -158,11 +168,21 @@ void MainWindow::drawSnake(bool state) {
 void MainWindow::adapt() {
     penColor();
     cImage<> inImg = cImage<>(ImgFileName.toStdString());
+    cImage<uint8_t> grdImg;
+    cImage<uint8_t> flwImg;
 
     Array2D<uint8_t> gradient = Array2D<uint8_t>(inImg.columns, inImg.rows);
     Array2D<uint8_t> flow = Array2D<uint8_t>(inImg.columns, inImg.rows);
 
-    getFlow(inImg, gradient, flow, ui->sBoxThreshold->value());
+    getFlow(inImg, gradient, flow, ui->sBoxThreshold->value(), saveIntSteps->isChecked());
+
+    if (saveIntSteps->isChecked()) {
+        grdImg = cImage<uint8_t>(gradient.arr, gradient.cols, gradient.rows);
+        flwImg = cImage<uint8_t>(flow.arr, flow.cols, flow.rows);
+
+        grdImg.write("./output/" + inImg.getFileName() + "_sobel.pgm");
+        flwImg.write("./output/" + inImg.getFileName() + "_flow.pgm");
+    }
 
     Snake snake = Snake(gradient, flow, ui->scribbleArea->snakePoints);
 

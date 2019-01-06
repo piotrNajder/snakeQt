@@ -4,6 +4,6 @@
 #include "c2DArray.h"
 #include "cImage.h"
 
-void getFlow(cImage<> const &image, Array2D<uint8_t> &gradient, Array2D<uint8_t> &flow, int32_t THRESHOLD);
+void getFlow(cImage<> const &image, Array2D<uint8_t> &gradient, Array2D<uint8_t> &flow, int32_t THRESHOLD, bool saveIntSteps);
 
 #endif // GRADFLOW_H

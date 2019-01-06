@@ -3,10 +3,9 @@
 
 
 ScribbleArea::ScribbleArea(QWidget *parent) : QWidget(parent) {
-    //setAttribute(Qt::WA_StaticContents);
     modified = false;
     scribbling = false;
-    myPenWidth = 3;
+    myPenWidth = 2;
     myPenColor = Qt::red;
 }
 
@@ -14,11 +13,8 @@ bool ScribbleArea::openImage(const QString &fileName) {
     QImage loadedImage;
     if (!loadedImage.load(fileName)) return false;
     QSize newSize = loadedImage.size();
-    //this->parentWidget()->parentWidget()->resize(newSize * 1.1025f);
-    //this->parentWidget()->resize(newSize * 1.05f);
     this->resize(newSize);
 
-    //resizeImage(&loadedImage, newSize);
     image = loadedImage;
     modified = false;
     update();

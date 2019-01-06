@@ -3,9 +3,11 @@
 #include "../include/gradflow.h"
 #include "../include/cChamferDistance.h"
 
-void getFlow(cImage<> const &inImg, Array2D<uint8_t> &gradient, Array2D<uint8_t> &flow, int32_t THRESHOLD) {
+void getFlow(cImage<> const &inImg, Array2D<uint8_t> &gradient, Array2D<uint8_t> &flow, int32_t THRESHOLD, bool saveIntSteps) {
     uint32_t W = inImg.columns;
     uint32_t H = inImg.rows;
+
+    cImage<uint8_t> binGrdImg;
 
     Array2D<uint8_t> gScaleImg = Array2D<uint8_t>(W, H);
 
@@ -40,6 +42,11 @@ void getFlow(cImage<> const &inImg, Array2D<uint8_t> &gradient, Array2D<uint8_t>
             if (gradient[y][x] > t) binGradient[y][x] = 255;
             else binGradient[y][x] = 0;
         }
+    }
+
+    if (saveIntSteps) {
+        binGrdImg = cImage<uint8_t>(binGradient.arr, binGradient.cols, binGradient.rows);
+        binGrdImg.write("./output/" + inImg.getFileName() + "_binGrad.pgm");
     }
 
     Array2D<double> cdist = Array2D<double>(W, H);
